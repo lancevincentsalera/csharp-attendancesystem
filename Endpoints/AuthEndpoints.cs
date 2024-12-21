@@ -46,6 +46,13 @@ public static class AuthEndpoints
     {
         var employee = await context.Employees.FirstOrDefaultAsync(e => e.Username == request.Username && e.Password == request.Password);
         if (employee == null) return Results.NotFound();
-        return Results.Ok("Login successful");
+        var employeeDto = new EmployeeDetailDto(
+            employee.Id,
+            employee.Username,
+            employee.FirstName,
+            employee.Attendances
+                .Select(a => new AttendanceDetailDto(a.Id, a.EmployeeId, a.TimeIn, a.TimeOut))
+                .ToList());
+        return Results.Ok(employeeDto);
     }
 }
